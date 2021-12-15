@@ -4,8 +4,11 @@ Use cases
 - Enroll
 - Mark lecture ass concluded
 - Select lecture in course
+
 - Create course
+- Create module
 - Create lecture
 - Update user
 - Update course
+- Update module
 - Update lecture
