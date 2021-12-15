@@ -39,7 +39,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -tjhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}
+          docker build . -t jhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}
           docker push jhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}
       - uses: azure/webapps-deploy@v2
         with:
