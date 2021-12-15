@@ -39,10 +39,10 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -tjhoregistry.azurecr.io/myexpressapp-jho:${{ github.sha }}
-          docker push jhoregistry.azurecr.io/myexpressapp-jho:${{ github.sha }}
+          docker build . -tjhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}
+          docker push jhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: 'myexpressapp-jho'
+          app-name: 'thewisedev-back-jhonatan'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'jhoregistry.azurecr.io/myexpressapp-jho:${{ github.sha }}'
+          images: 'jhoregistry.azurecr.io/thewisedev-back-jhonatan:${{ github.sha }}'
