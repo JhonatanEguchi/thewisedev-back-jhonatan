@@ -1,8 +1,9 @@
 import { Lecture } from './lecture'
+import { moveInArray } from './util'
 
 export class Module {
     private readonly lectures: Array<Lecture> = []
-    private name: string
+    public readonly name: string
     constructor (name: string) {
       this.name = name
     }
@@ -30,7 +31,7 @@ export class Module {
         return
       }
       const from = this.position(lecture)
-      this.lectures.splice(to - 1, 0, this.lectures.splice(from - 1, 1)[0])
+      moveInArray(this.lectures, from - 1, to - 1)
     }
 
     position (lecture: Lecture): number {
