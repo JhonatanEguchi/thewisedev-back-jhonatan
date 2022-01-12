@@ -4,6 +4,7 @@ import { moveInArray } from './util'
 export class Module {
     private readonly lectures: Array<Lecture> = []
     public readonly name: string
+
     constructor (name: string) {
       this.name = name
     }
@@ -20,6 +21,12 @@ export class Module {
 
     private includesLecturesWithSameName (lecture: Lecture): boolean {
       return this.lectures.find(lec => lec.description === lecture.description) !== undefined
+    }
+
+    remove (lecture: Lecture): void {
+      if (!this.includes(lecture)) return
+      const positionInArray = this.position(lecture) - 1
+      this.lectures.splice(positionInArray, 1)
     }
 
     includes (lecture: Lecture): boolean {
