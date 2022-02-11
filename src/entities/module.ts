@@ -1,51 +1,43 @@
+import { Container } from './container'
 import { Lecture } from './lecture'
-import { moveInArray } from './util'
+import { Element } from './element'
+import { Either } from '../shared/either'
+import { ExistingElementError } from './errors/exisiting-element-error'
+import { UnexistingElementError } from './errors/unexisting-element-error'
+import { InvalidPositionError } from './errors/invalid-position-error'
 
-export class Module {
-    private readonly lectures: Array<Lecture> = []
-    public readonly name: string
+export class Module implements Element {
+  private readonly lectures: Container<Lecture> = new Container<Lecture>()
+  public readonly name: string
+  constructor (name: string) {
+    this.name = name
+  }
 
-    constructor (name: string) {
-      this.name = name
-    }
+  get numberOfLectures (): number {
+    return this.lectures.numberOfElements
+  }
 
-    get numberOfLectures (): number {
-      return this.lectures.length
-    }
+  add (lecture: Lecture): Either<ExistingElementError, void> {
+    return this.lectures.add(lecture)
+  }
 
-    add (lecture: Lecture): void {
-      if (!this.includesLecturesWithSameName(lecture)) {
-        this.lectures.push(lecture)
-      }
-    }
+  includes (lecture: Lecture): boolean {
+    return this.lectures.includes(lecture)
+  }
 
-    private includesLecturesWithSameName (lecture: Lecture): boolean {
-      return this.lectures.find(lec => lec.description === lecture.description) !== undefined
-    }
+  move (lecture: Lecture, position: number): Either<ExistingElementError | InvalidPositionError, void> {
+    return this.lectures.move(lecture, position)
+  }
 
-    remove (lecture: Lecture): void {
-      if (!this.includes(lecture)) return
-      const positionInArray = this.position(lecture) - 1
-      this.lectures.splice(positionInArray, 1)
-    }
+  position (lecture: Lecture): Either<UnexistingElementError, number> {
+    return this.lectures.position(lecture)
+  }
 
-    includes (lecture: Lecture): boolean {
-      return this.lectures.find(lec => lec.equals(lecture)) !== undefined
-    }
+  remove (lecture: Lecture): Either<UnexistingElementError, void> {
+    return this.lectures.remove(lecture)
+  }
 
-    move (lecture: Lecture, to: number): void {
-      if (to > this.lectures.length || to <= 0) {
-        return
-      }
-      const from = this.position(lecture)
-      moveInArray(this.lectures, from - 1, to - 1)
-    }
-
-    position (lecture: Lecture): number {
-      const lectureInModule = this.lectures.find(lec => lec.equals(lecture))
-      if (lectureInModule === undefined) {
-        return undefined
-      }
-      return this.lectures.indexOf(lectureInModule) + 1
-    }
+  equals (module: Module): boolean {
+    return this.name === module.name
+  }
 }
