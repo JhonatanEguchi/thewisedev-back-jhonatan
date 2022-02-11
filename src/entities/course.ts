@@ -1,57 +1,49 @@
 import { Lecture } from '.'
+import { Either } from '../shared/either'
+import { Container } from './container'
+import { ExistingElementError } from './errors/exisiting-element-error'
+import { InvalidPositionError } from './errors/invalid-position-error'
+import { UnexistingElementError } from './errors/unexisting-element-error'
 import { Module } from './module'
-import { moveInArray } from './util'
 
 export class Course {
-    private modules: Array<Module> = []
-    public reference: string
-    public description: string
+  private modules: Container<Module> = new Container<Module>()
+  public reference: string
+  public description: string
 
-    constructor (reference: string, description: string) {
-      this.reference = reference
-      this.description = description
-    }
+  constructor (reference: string, description: string) {
+    this.reference = reference
+    this.description = description
+  }
 
-    get numberOfModules () : number {
-      return this.modules.length
-    }
+  get numberOfModules (): number {
+    return this.modules.numberOfElements
+  }
 
-    add (module: Module): void {
-      if (!this.includesModulesWithSameName(module)) {
-        this.modules.push(module)
-      }
-    }
+  add (module: Module): Either<ExistingElementError, void> {
+    return this.modules.add(module)
+  }
 
-    private includesModulesWithSameName (module: Module): boolean {
-      return this.modules.find(mod => mod.name === module.name) !== undefined
-    }
+  remove (module: Module): Either<UnexistingElementError, void> {
+    return this.modules.remove(module)
+  }
 
-    includes (module: Module): boolean {
-      return this.modules.includes(module)
-    }
+  includes (module: Module): boolean {
+    return this.modules.includes(module)
+  }
 
-    move (module: Module, to: number): void {
-      if (to > this.modules.length || to < 1) {
-        return
-      }
-      const from = this.position(module)
-      moveInArray(this.modules, from - 1, to - 1)
-    }
+  move (module: Module, position: number): Either<UnexistingElementError | InvalidPositionError, void> {
+    return this.modules.move(module, position)
+  }
 
-    position (module: Module): number {
-      const moduleInCourse = this.modules.find(mod => mod.name === module.name)
-      if (moduleInCourse === undefined) {
-        return undefined
-      }
-      return this.modules.indexOf(moduleInCourse) + 1
-    }
+  position (module: Module): Either<UnexistingElementError, number> {
+    return this.modules.position(module)
+  }
 
-    moveLecture (lecture: Lecture, fromModule: Module, toModule: Module, position: number): void {
-      fromModule.remove(lecture)
-      toModule.add(lecture)
-      const currentLecturePosition = toModule.position(lecture)
-      if (currentLecturePosition !== position) {
-        toModule.move(lecture, position)
-      }
-    }
+  moveLecture (lecture: Lecture, fromModule: Module, toModule: Module, position: number): void {
+    fromModule.remove(lecture)
+    toModule.add(lecture)
+    const currentLecturePosition = toModule.position(lecture).value
+    if (currentLecturePosition !== position) toModule.move(lecture, position)
+  }
 }
