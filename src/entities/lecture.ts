@@ -1,29 +1,42 @@
+import { Container } from './container'
 import { Material } from './material'
+import { Element } from './element'
+import { Either } from '../shared/either'
+import { ExistingElementError } from './errors/exisiting-element-error'
+import { UnexistingElementError } from './errors/unexisting-element-error'
+import { InvalidPositionError } from './errors/invalid-position-error'
 
-export class Lecture {
-    readonly description: string
-    readonly videoUrl: string
-    private readonly materials: Array<Material> = []
+export class Lecture implements Element {
+  private readonly materials: Container<Material> = new Container<Material>()
+  readonly description: string
+  readonly videoUrl: string
 
-    constructor (description: string, videoUrl: string) {
-      this.description = description
-      this.videoUrl = videoUrl
-    }
+  constructor (description: string, videoUrl: string) {
+    this.description = description
+    this.videoUrl = videoUrl
+  }
 
-    equals (other: Lecture): boolean {
-      return this.description === other.description && this.videoUrl === other.videoUrl
-    }
+  add (material: Material): Either<ExistingElementError, void> {
+    return this.materials.add(material)
+  }
 
-    add (material: Material): void {
-      this.materials.push(material)
-    }
+  includes (material: Material): boolean {
+    return this.materials.includes(material)
+  }
 
-    remove (material: Material): void {
-      const position = this.materials.indexOf(material)
-      if (position !== -1) this.materials.splice(position, 1)
-    }
+  remove (material: Material): Either<UnexistingElementError, void> {
+    return this.materials.remove(material)
+  }
 
-    includes (material: Material): boolean {
-      return this.materials.includes(material)
-    }
+  move (material: Material, to: number): Either<UnexistingElementError | InvalidPositionError, void> {
+    return this.materials.move(material, to)
+  }
+
+  position (material: Material): Either<UnexistingElementError, number> {
+    return this.materials.position(material)
+  }
+
+  equals (other: Lecture): boolean {
+    return this.description === other.description
+  }
 }
